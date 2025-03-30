@@ -4,10 +4,10 @@
 # See https://github.com/elastic/apm-server/blob/main/dev_docs/TESTING.md#tilt--kubernetes
 #
 version: '3.9'
-x-logging: &default-logging
-  driver: "json-file"
-  options:
-    max-size: "1g"
+# x-logging: &default-logging
+#   driver: "json-file"
+#   options:
+#     max-size: "1g"
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.4
@@ -45,7 +45,7 @@ services:
       # - "./testing/docker/elasticsearch/users:/usr/share/elasticsearch/config/users"
       # - "./testing/docker/elasticsearch/users_roles:/usr/share/elasticsearch/config/users_roles"
       # - "./testing/docker/elasticsearch/ingest-geoip:/usr/share/elasticsearch/config/ingest-geoip"
-    logging: *default-logging
+    # logging: *default-logging
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.17.4
@@ -66,7 +66,21 @@ services:
     volumes:
       # - "./testing/docker/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml"
       - "./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml"
-    logging: *default-logging
+    # logging: *default-logging
+
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:8.17.4
+    container_name: apm-server
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#      - ELASTICSEARCH_USERNAME=elastic
+#      - ELASTIC_PASSWORD=password
+#      - ELASTICSEARCH_SERVICE_TOKEN=AEAAWVsYXN0aWMva2liYW5hL2tpYmFuYS1zeXN0ZW06ajdqeXpYNHdTajJ4bVdzbDd5S0tNdw
+      - kibana.host=http://kibana:5601
+    ports:
+      - 8200:8200
+    # networks:
+      # - elastic    
 
   # metricbeat:
   #   image: docker.elastic.co/beats/metricbeat:8.17.4
